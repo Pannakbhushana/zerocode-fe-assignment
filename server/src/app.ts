@@ -2,6 +2,8 @@ import { Server as HTTPServer } from 'http';
 import express, { Application } from 'express';
 import Database from './database/db';
 import cors from 'cors';
+import { errorHandler } from './Application/ApplicationErrorHandler';
+import { RouteConfig } from './types';
 
 
 export default class App {
@@ -22,9 +24,9 @@ export default class App {
     });
 
     // Define API routes
-    // this.app.use('/api', this.createRESTApiServer());
+    this.app.use('/api', this.createRESTApiServer());
 
-    // this.app.use(errorHandler as express.ErrorRequestHandler);
+    this.app.use(errorHandler as express.ErrorRequestHandler);
 
     this.httpServer = new HTTPServer(this.app);
 
@@ -33,6 +35,20 @@ export default class App {
     });
 
     return Promise.resolve(this.httpServer);
+  }
+
+   private static createRESTApiServer(): Application {
+    const app: Application = express();
+    const routes: RouteConfig[] = [{
+      path: '/account',
+      router: new AccountRouter().router,
+    }
+    ];
+
+    routes.forEach(route => {
+      app.use(route.path, route.router);
+    });
+    return app;
   }
 }
 
