@@ -2,8 +2,9 @@ import { Server as HTTPServer } from 'http';
 import express, { Application } from 'express';
 import Database from './database/db';
 import cors from 'cors';
-import { errorHandler } from './Application/ApplicationErrorHandler';
+import { errorHandler } from './modules/Application/ApplicationErrorHandler';
 import { RouteConfig } from './types';
+import AccountRouter from './modules/account/rest-api/account.router';
 
 
 export default class App {
