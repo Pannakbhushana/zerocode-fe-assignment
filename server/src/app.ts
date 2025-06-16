@@ -1,0 +1,46 @@
+import { Server as HTTPServer } from 'http';
+import express, { Application } from 'express';
+import Database from './database/db';
+import cors from 'cors';
+
+
+export default class App {
+  private static app: Application;
+  private static httpServer: HTTPServer;
+
+  public static async startServer(): Promise<HTTPServer> {
+    this.app = express();
+    await Database.connect();
+    // Set application version header
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+
+    this.app.use(cors());
+    this.app.use((_, res, next) => {
+      res.set('x-version', process.env.npm_package_version);
+      next();
+    });
+
+    // Define API routes
+    // this.app.use('/api', this.createRESTApiServer());
+
+    // this.app.use(errorHandler as express.ErrorRequestHandler);
+
+    this.httpServer = new HTTPServer(this.app);
+
+    this.httpServer.listen(8080, () => {
+      console.log('Server started on port 8080');
+    });
+
+    return Promise.resolve(this.httpServer);
+  }
+}
+
+(async () => {
+  try {
+    await App.startServer();
+  } catch (error) {
+    console.error('Error starting server:', error);
+  }
+})();
+

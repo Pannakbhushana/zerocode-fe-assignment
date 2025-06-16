@@ -1,0 +1,15 @@
+{
+  "name": "zerocode-fe-assignment",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+   "serve": "concurrently \"npm run dev --prefix server\" \"npm start --prefix client\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
