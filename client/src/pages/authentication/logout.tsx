@@ -27,7 +27,7 @@ const Logout: React.FC = () => {
                 You’re already Logged In! 🎉
               </Box>
             <Text className="text-gray-500 text-center mt-2 text-sm sm:text-base">
-                Enjoy seamless access to your dashboard.
+                Enjoy seamless access to your <span className="text-blue-500 underline cursor-pointer" onClick={()=>navigate('/')}>dashboard.</span>
             </Text>
 
             <Button

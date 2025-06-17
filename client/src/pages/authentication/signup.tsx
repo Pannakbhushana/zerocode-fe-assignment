@@ -41,7 +41,7 @@ const Signup: React.FC = () => {
   }
 
   return (
-    <Box className="flex items-center justify-center min-h-screen mt-20 mb-20">
+    <Box className="flex items-center justify-center min-h-screen mb-20">
      <Box className="bg-white p-6 rounded-lg shadow-lg w-full md:w-[40%]">
         <Box className="text-2xl font-bold text-teal-600 text-center">Create Your Account 🎉</Box>
         <Text className="text-gray-500 text-center mt-2">Join us and start your journey today!</Text>

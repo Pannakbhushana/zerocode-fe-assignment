@@ -10,6 +10,7 @@ import NotFoundPage from "../pages/page-not-found";
 import ResetPassword from "../pages/authentication/Reset-password";
 import DeleteAccount from "../pages/authentication/delete-account";
 import Dashboard from "../pages/dashboard";
+import Layout from "../components/layouts";
 
 
 const AllRoutes = () => {
@@ -26,7 +27,7 @@ const AllRoutes = () => {
             
             {/* Private Routes */}
             <Route element={<PrivateRoute />}>
-                <Route path={path.LANDING_PAGE} element={<Dashboard />} />
+                <Route path={path.LANDING_PAGE} element={<Layout><Dashboard /></Layout>} />
             </Route>
         </Routes>
     </ScrollToTop>
