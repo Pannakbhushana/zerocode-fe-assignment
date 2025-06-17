@@ -1,28 +1,67 @@
-import React from "react";
+import React, { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { createSession, getAllSessions } from '../../../redux/sessionSlice';
 
 interface SidebarProps {
   isOpen: boolean;
+  activeSessionId: string | null;
   onClose: () => void;
+  onSelectSession: (sessionId: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  return (
-    <div
-      className={`fixed md:static top-0 left-0 h-full w-64 bg-gray-100 p-4 border-r transition-transform duration-300 z-40
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
-    >
-      {/* Close button for mobile */}
-      <div className="md:hidden flex justify-end">
-        <button onClick={onClose} className="text-gray-700 font-bold text-xl">
-          ✕
-        </button>
-      </div>
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onSelectSession, activeSessionId }) => {
+  const dispatch = useAppDispatch();
+  const { sessions } = useAppSelector((state) => state.session);
 
-      <h2 className="text-lg font-semibold mb-4">Chat History</h2>
-      <ul className="space-y-2">
-        <li className="p-2 bg-white rounded shadow">Chat 1</li>
-        <li className="p-2 bg-white rounded shadow">Chat 2</li>
-        {/* Add more chat history */}
+  useEffect(() => {
+  const initializeSession = async () => {
+    const result = await dispatch(getAllSessions());
+
+    if (getAllSessions.fulfilled.match(result)) {
+      const allSessions = result.payload;
+      if (allSessions.length === 0) {
+        const createResult = await dispatch(createSession({ title: 'New Chat' }));
+        if (createSession.fulfilled.match(createResult)) {
+          onSelectSession(createResult.payload._id);
+        }
+      } else if (!activeSessionId) {
+        onSelectSession(allSessions[0]._id);
+      }
+    }
+  };
+
+  initializeSession();
+}, [dispatch, onSelectSession, activeSessionId]);
+
+  const handleNewChat = async () => {
+    const result = await dispatch(createSession({ title: 'New Chat' }));
+    if (createSession.fulfilled.match(result)) {
+      console.log("result.payload---", result.payload)
+      onSelectSession(result.payload._id);
+    }
+  };
+
+  return (
+    <div className={`min-w-[300px] max-h-[90vh] overflow-y-auto bg-white border-r p-4 space-y-4 ${isOpen ? 'block' : 'hidden'
+      } md:block`}>
+      <button
+        className="w-full mt-1 bg-teal-600 text-white py-2 rounded-lg"
+        onClick={handleNewChat}
+      >
+        + New Chat
+      </button>
+
+      <ul className="space-y-2 text-start">
+        {sessions.map((session) => (
+          <li
+            key={session._id}
+            onClick={() => onSelectSession(session._id)}
+            className={`p-2 cursor-pointer rounded ${session._id === activeSessionId ? 'bg-gray-200 font-semibold' : 'hover:bg-gray-200'
+              }`}
+          >
+            {session.title}
+          </li>
+        ))}
       </ul>
     </div>
   );

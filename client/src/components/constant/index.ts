@@ -8,6 +8,7 @@ export const constMsg = {
 
 export const path = {
     LANDING_PAGE : '/',
+    HELP_PAGE : '/help',
     SIGNUP_VERIFY_OTP : '/signup-verify-otp',
     LOGIN_PAGE : '/login',
     SIGN_UP: '/signup',

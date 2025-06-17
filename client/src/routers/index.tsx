@@ -11,23 +11,27 @@ import ResetPassword from "../pages/authentication/Reset-password";
 import DeleteAccount from "../pages/authentication/delete-account";
 import Dashboard from "../pages/dashboard";
 import Layout from "../components/layouts";
+import HelpPage from "../pages/help";
 
 
 const AllRoutes = () => {
     return <ScrollToTop>
         <Routes>
             {/* public route */}
-            
+
             <Route path={path.SIGNUP_VERIFY_OTP} element={<SignupVerifyOTPForm />} />
             <Route path={path.LOGIN_PAGE} element={<LoginPage />} />
             <Route path={path.SIGN_UP} element={<Signup />} />
             <Route path={path.NOT_FOUND} element={<NotFoundPage />} />
             <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
             <Route path={path.DELETE_ACCOUNT} element={<DeleteAccount />} />
-            
+            <Route path={path.HELP_PAGE} element={<HelpPage />} />
+
             {/* Private Routes */}
             <Route element={<PrivateRoute />}>
-                <Route path={path.LANDING_PAGE} element={<Layout><Dashboard /></Layout>} />
+                <Route element={<Layout />}>
+                    <Route path={path.LANDING_PAGE} element={<Dashboard />} />
+                </Route>
             </Route>
         </Routes>
     </ScrollToTop>

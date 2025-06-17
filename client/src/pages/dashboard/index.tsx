@@ -1,35 +1,68 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ChatMessage } from '../../type/chat.type';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { fetchChatResponse } from '../../redux/chatSlice';
+import { useOutletContext } from 'react-router-dom';
+import { fetchMessagesBySessionId, postMessage } from '../../redux/messageSlice';
+import { updateSession } from '../../redux/sessionSlice';
 
 const Dashboard: React.FC = () => {
    const [inputMessage, setInputMessage] = useState('');
-   const [messages, setMessages] = useState<ChatMessage[]>([]);
+   const [chatMsg, setChatMsg] = useState<ChatMessage[]>([]);
+   const [hasTitleUpdated, setHasTitleUpdated] = useState(false);
    const dispatch = useAppDispatch();
    const loading = useAppSelector((state) => state.chat.loading);
    const chatContainerRef = useRef<HTMLDivElement>(null);
+   const { activeSessionId } = useOutletContext<{ activeSessionId: string | null }>();
+   const { messages } = useAppSelector((state) => state.message);
 
+   useEffect(() => {
+      if (activeSessionId) {
+         dispatch(fetchMessagesBySessionId(activeSessionId));
+      }
+   }, [activeSessionId]);
+
+   useEffect(() => {
+      if (activeSessionId && messages) {
+         setChatMsg(messages);
+      }
+   }, [activeSessionId, messages]);
+
+   useEffect(() => {
+      setHasTitleUpdated(false);
+   }, [activeSessionId]);
+console.log("active session", activeSessionId)
    const handleSendMessage = async () => {
       if (!inputMessage.trim()) return;
 
       const userMessage: ChatMessage = { sender: 'user', message: inputMessage };
-      setMessages((prev) => [...prev, userMessage]);
+      setChatMsg((prev) => [...prev, userMessage]);
 
       const result = await dispatch(fetchChatResponse({ prompt: inputMessage }));
+      if (activeSessionId && inputMessage) await dispatch(postMessage({ message: inputMessage, sender: 'user', sessionId: activeSessionId }));
 
       if (fetchChatResponse.fulfilled.match(result)) {
          const botReply: ChatMessage = {
             sender: 'bot',
             message: result.payload.response,
          };
-         setMessages((prev) => [...prev, botReply]);
+         setChatMsg((prev) => [...prev, botReply]);
+
+         if (activeSessionId) {
+            if (!hasTitleUpdated) {
+               const generatedTitle = inputMessage.split(' ').slice(0, 6).join(' ') + '...';
+               await dispatch(updateSession({ sessionId: activeSessionId, newTitle: generatedTitle }));
+               setHasTitleUpdated(true);
+            }
+            await dispatch(postMessage({ ...botReply, sessionId: activeSessionId }));
+         }
+
       } else if (fetchChatResponse.rejected.match(result)) {
          const errorReply: ChatMessage = {
             sender: 'bot',
             message: result.payload || 'Bot failed to respond.',
          };
-         setMessages((prev) => [...prev, errorReply]);
+         setChatMsg((prev) => [...prev, errorReply]);
       }
 
       setInputMessage('');
@@ -44,17 +77,17 @@ const Dashboard: React.FC = () => {
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gray-50"
          >
-            {messages.length === 0 ? (
+            {chatMsg.length === 0 ? (
                <div className="text-gray-500 text-center h-full text-4xl flex justify-center items-center">
                   <p>👋 Start a conversation to begin chatting with the bot.</p>
                </div>
             ) : (
-               messages.map((msg, index) => (
+               chatMsg.map((msg, index) => (
                   <div
                      key={index}
-                     className={`px-4 py-2 rounded-lg w-full border border-red-500 ${msg.sender === 'user'
-                           ? 'bg-teal-100 self-end text-right'
-                           : 'bg-gray-200 self-start text-left'
+                     className={`px-4 py-2 rounded-lg w-full ${msg.sender === 'user'
+                        ? 'bg-teal-100 self-end text-right'
+                        : 'bg-gray-200 self-start text-left'
                         }`}
                   >
                      <p className="text-sm whitespace-pre-wrap">{msg.message}</p>

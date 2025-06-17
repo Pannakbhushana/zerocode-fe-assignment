@@ -43,4 +43,20 @@ export default class ChatController {
             next(error);
         }
     }
+
+    async updateSessionTitle(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { sessionId, newTitle } = req.body;
+
+      if (!sessionId || !newTitle) {
+        res.status(400).json({ message: 'Session ID and new title are required' });
+        return;
+      }
+
+      const updatedSession = await ChatService.updateSessionTitle(sessionId, newTitle);
+      res.json(updatedSession);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -95,7 +95,7 @@ const UserTab: React.FC = () => {
             <Menu.Item>
               {({ active }) => (
                 <button
-                  onClick={() => handleNavigate("/help")}
+                  onClick={() => handleNavigate(path.HELP_PAGE)}
                   className={`${
                     active ? "bg-gray-100" : ""
                   } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}

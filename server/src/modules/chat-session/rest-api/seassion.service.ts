@@ -9,4 +9,8 @@ export default class ChatService {
   static async getUserSessions(userId: string) {
     return ChatReader.getSessionsByUser(userId);
   }
+
+   static async updateSessionTitle(sessionId: string, newTitle: string) {
+    return ChatWriter.updateSessionTitle(sessionId, newTitle);
+  }
 }

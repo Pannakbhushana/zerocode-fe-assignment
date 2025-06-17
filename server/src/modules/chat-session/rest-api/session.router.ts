@@ -10,5 +10,6 @@ export default class ChatRouter extends ApplicationRouter {
 
     this.router.post('/new-session', basicAuthMiddleware, ctrl.createSession);
     this.router.get('/sessions', basicAuthMiddleware, ctrl.listSessions);
+    this.router.patch('/session/update', basicAuthMiddleware, ctrl.updateSessionTitle);
   }
 }
