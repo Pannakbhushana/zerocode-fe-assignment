@@ -13,4 +13,8 @@ export default class ChatService {
    static async updateSessionTitle(sessionId: string, newTitle: string) {
     return ChatWriter.updateSessionTitle(sessionId, newTitle);
   }
+
+   static async deleteAllSession(userId:string) {
+    return ChatWriter.deleteAllSessionsByUser(userId);
+  }
 }

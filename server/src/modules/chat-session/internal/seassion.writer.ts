@@ -1,4 +1,4 @@
-import { ChatSessionModel } from "../../../models";
+import { ChatSessionModel, MessageModel } from "../../../models";
 import { ChatMessage } from "../../../models/chat-model";
 
 export default class ChatWriter {
@@ -19,5 +19,15 @@ export default class ChatWriter {
     }
 
     return session;
+  }
+
+  static async deleteAllSessionsByUser(userId: string): Promise<void> {
+    const sessions = await ChatSessionModel.find({ userId });
+    const sessionIds = sessions.map(session => session._id);
+
+    if (sessionIds.length === 0) return;
+
+    await MessageModel.deleteMany({ sessionId: { $in: sessionIds } });
+    await ChatSessionModel.deleteMany({ userId });
   }
 }

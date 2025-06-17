@@ -11,40 +11,40 @@ interface AuthenticatedRequest extends Request {
 
 
 export default class ChatController {
-    async createSession(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-        try {
-            const { title } = req.body;
-            const userId = req.user?.userId;
+  async createSession(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { title } = req.body;
+      const userId = req.user?.userId;
 
-            if (!userId) {
-                 res.status(401).json({ message: 'Unauthorized: No user ID found' });
-                 return
-            }
+      if (!userId) {
+        res.status(401).json({ message: 'Unauthorized: No user ID found' });
+        return
+      }
 
-            const session = await ChatService.createSession(userId, title);
-            res.status(201).json(session);
-        } catch (error) {
-            next(error);
-        }
+      const session = await ChatService.createSession(userId, title);
+      res.status(201).json(session);
+    } catch (error) {
+      next(error);
     }
+  }
 
-    async listSessions(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-        try {
-            const userId = req.user?.userId;
+  async listSessions(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.userId;
 
-            if (!userId) {
-                res.status(401).json({ message: 'Unauthorized: No user ID found' });
-                return
-            }
+      if (!userId) {
+        res.status(401).json({ message: 'Unauthorized: No user ID found' });
+        return
+      }
 
-            const sessions = await ChatService.getUserSessions(userId);
-            res.json(sessions);
-        } catch (error) {
-            next(error);
-        }
+      const sessions = await ChatService.getUserSessions(userId);
+      res.json(sessions);
+    } catch (error) {
+      next(error);
     }
+  }
 
-    async updateSessionTitle(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  async updateSessionTitle(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const { sessionId, newTitle } = req.body;
 
@@ -55,6 +55,22 @@ export default class ChatController {
 
       const updatedSession = await ChatService.updateSessionTitle(sessionId, newTitle);
       res.json(updatedSession);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteAllSession(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        res.status(401).json({ message: 'Unauthorized: No user ID found' });
+        return
+      }
+
+      const deleteSessions = await ChatService.deleteAllSession(userId);
+      res.json(deleteSessions);
     } catch (error) {
       next(error);
     }

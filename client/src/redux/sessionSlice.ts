@@ -43,6 +43,19 @@ export const updateSession = createAsyncThunk(
   }
 );
 
+// Delete all sessions
+export const deleteAllSessions = createAsyncThunk(
+  'session/deleteAll',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await sessionService.deleteAllSessions();
+      return res;
+    } catch (err: any) {
+      return rejectWithValue(err?.response?.data?.error?.message || 'Failed to delete all sessions');
+    }
+  }
+);
+
 // Thunk for fetching all sessions
 export const getAllSessions = createAsyncThunk(
   'session/getAll',
@@ -106,6 +119,20 @@ const sessionSlice = createSlice({
         state.sessions = action.payload;
       })
       .addCase(getAllSessions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+       // Delete all sessions
+      .addCase(deleteAllSessions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAllSessions.fulfilled, (state) => {
+        state.loading = false;
+        state.sessions = [];
+      })
+      .addCase(deleteAllSessions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

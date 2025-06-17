@@ -9,6 +9,8 @@ import { path } from "../constant";
 import { useDispatch } from "react-redux";
 import logoutUser from "../../utils/logout";
 import useCustomToast from "../toast/useCustomToast";
+import { FiRefreshCw } from "react-icons/fi";
+import { deleteAllSessions } from "../../redux/sessionSlice";
 
 const getUserNameInitial = (username: string | null) => {
   if (!username) return null;
@@ -28,16 +30,26 @@ const UserTab: React.FC = () => {
   const FiTrash = FiTrash2 as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
   const FihelpCircle = FiHelpCircle as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
   const FilogOut = FiLogOut as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
+  const FirefreshCw = FiRefreshCw as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 
   const handleNavigate = (to: string) => {
     navigate(to);
   };
 
+  const handleClearHistory = async () => {
+    try {
+      await dispatch<any>(deleteAllSessions()).unwrap();
+      toast.success("Chat history cleared successfully.");
+    } catch (error: any) {
+      toast.error(error || "Failed to clear chat history.");
+    }
+  };
+
   const handleLogout = () => {
-          logoutUser(dispatch, navigate)
-          toast.success('You have been logged out.')
-      };
-  
+    logoutUser(dispatch, navigate)
+    toast.success('You have been logged out.')
+  };
+
 
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -70,9 +82,8 @@ const UserTab: React.FC = () => {
               {({ active }) => (
                 <button
                   onClick={() => handleNavigate(path.RESET_PASSWORD)}
-                  className={`${
-                    active ? "bg-gray-100" : ""
-                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}
+                  className={`${active ? "bg-gray-100" : ""
+                    } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}
                 >
                   <Fikey /> Change Password
                 </button>
@@ -82,10 +93,34 @@ const UserTab: React.FC = () => {
             <Menu.Item>
               {({ active }) => (
                 <button
+                  onClick={() => handleNavigate(path.HELP_PAGE)}
+                  className={`${active ? "bg-gray-100" : ""
+                    } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}
+                >
+                  <FihelpCircle /> Help
+                </button>
+              )}
+            </Menu.Item>
+
+            
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={handleClearHistory}
+                  className={`${active ? "bg-gray-100" : ""
+                    } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}
+                >
+                  <FirefreshCw /> Clear History
+                </button>
+              )}
+            </Menu.Item>
+
+            <Menu.Item>
+              {({ active }) => (
+                <button
                   onClick={() => handleNavigate(path.DELETE_ACCOUNT)}
-                  className={`${
-                    active ? "bg-gray-100" : ""
-                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}
+                  className={`${active ? "bg-gray-100" : ""
+                    } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}
                 >
                   <FiTrash /> Delete Account
                 </button>
@@ -95,23 +130,9 @@ const UserTab: React.FC = () => {
             <Menu.Item>
               {({ active }) => (
                 <button
-                  onClick={() => handleNavigate(path.HELP_PAGE)}
-                  className={`${
-                    active ? "bg-gray-100" : ""
-                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center gap-2`}
-                >
-                  <FihelpCircle /> Help
-                </button>
-              )}
-            </Menu.Item>
-
-            <Menu.Item>
-              {({ active }) => (
-                <button
                   onClick={handleLogout}
-                  className={`${
-                    active ? "bg-gray-100" : ""
-                  } flex w-full px-4 py-2 text-sm text-red-600 items-center gap-2`}
+                  className={`${active ? "bg-gray-100" : ""
+                    } flex w-full px-4 py-2 text-sm text-red-600 items-center gap-2`}
                 >
                   <FilogOut /> Logout
                 </button>

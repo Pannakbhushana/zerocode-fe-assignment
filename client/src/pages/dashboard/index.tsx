@@ -5,6 +5,7 @@ import { fetchChatResponse } from '../../redux/chatSlice';
 import { useOutletContext } from 'react-router-dom';
 import { fetchMessagesBySessionId, postMessage } from '../../redux/messageSlice';
 import { updateSession } from '../../redux/sessionSlice';
+import { FiSend } from 'react-icons/fi';
 
 const Dashboard: React.FC = () => {
    const [inputMessage, setInputMessage] = useState('');
@@ -15,6 +16,9 @@ const Dashboard: React.FC = () => {
    const chatContainerRef = useRef<HTMLDivElement>(null);
    const { activeSessionId } = useOutletContext<{ activeSessionId: string | null }>();
    const { messages } = useAppSelector((state) => state.message);
+   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+   const Fisend = FiSend as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 
    useEffect(() => {
       if (activeSessionId) {
@@ -31,7 +35,15 @@ const Dashboard: React.FC = () => {
    useEffect(() => {
       setHasTitleUpdated(false);
    }, [activeSessionId]);
-console.log("active session", activeSessionId)
+
+   useEffect(() => {
+  if (activeSessionId) {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  }
+}, [activeSessionId]);
+
    const handleSendMessage = async () => {
       if (!inputMessage.trim()) return;
 
@@ -79,7 +91,7 @@ console.log("active session", activeSessionId)
          >
             {chatMsg.length === 0 ? (
                <div className="text-gray-500 text-center h-full text-4xl flex justify-center items-center">
-                  <p>👋 Start a conversation to begin chatting with the bot.</p>
+                  <p>What's on your mind today?</p>
                </div>
             ) : (
                chatMsg.map((msg, index) => (
@@ -100,8 +112,9 @@ console.log("active session", activeSessionId)
          </div>
 
          {/* Input */}
-         <div className="border-t bg-white px-4 py-3 flex gap-2 items-end">
+         <div className="border-t bg-white px-4 py-3 flex gap-2  justify-center items-center">
             <textarea
+               ref={inputRef}
                value={inputMessage}
                onChange={(e) => setInputMessage(e.target.value)}
                onKeyDown={(e) => {
@@ -120,7 +133,7 @@ console.log("active session", activeSessionId)
                disabled={loading}
                className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg"
             >
-               Send
+              <Fisend className="text-lg"  />
             </button>
          </div>
 

@@ -67,4 +67,16 @@ export default class SessionService extends APIService {
     };
   }
 }
+
+async deleteAllSessions(): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await this.apiClient.delete('/chat/session/delete');
+    return response.data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to delete sessions.',
+    };
+  }
+}
 }
