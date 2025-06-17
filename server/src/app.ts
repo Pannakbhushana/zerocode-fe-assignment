@@ -6,6 +6,8 @@ import { errorHandler } from './modules/Application/ApplicationErrorHandler';
 import { RouteConfig } from './types';
 import AccountRouter from './modules/account/rest-api/account.router';
 import ChatbotRouter from './modules/chatbot/rest-api/chat.router';
+import ChatRouter from './modules/chat-session/rest-api/session.router';
+import MessageRouter from './modules/seassion-message/rest-api/session.router';
 
 
 export default class App {
@@ -48,6 +50,14 @@ export default class App {
     {
       path: '/chatbot',
       router: new ChatbotRouter().router,
+    },
+    {
+      path: '/chat',
+      router: new ChatRouter().router,
+    },
+    {
+      path: '/message',
+      router: new MessageRouter().router,
     }
     ];
 

@@ -31,14 +31,6 @@ export const basicAuthMiddleware = (
 
     req.user = authPayload;
 
-    if (req.params.userId && authPayload.userId !== req.params.userId) {
-      throw new ApplicationError(
-      "This token is not authorized to access the given user resource",
-      'INVALID_TOKEN',
-      401
-    );
-    }
-
     next();
   } catch (error) {
     throw new ApplicationError(
