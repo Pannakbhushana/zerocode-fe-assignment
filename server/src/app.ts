@@ -5,6 +5,7 @@ import cors from 'cors';
 import { errorHandler } from './modules/Application/ApplicationErrorHandler';
 import { RouteConfig } from './types';
 import AccountRouter from './modules/account/rest-api/account.router';
+import ChatbotRouter from './modules/chatbot/rest-api/chat.router';
 
 
 export default class App {
@@ -43,6 +44,10 @@ export default class App {
     const routes: RouteConfig[] = [{
       path: '/account',
       router: new AccountRouter().router,
+    },
+    {
+      path: '/chatbot',
+      router: new ChatbotRouter().router,
     }
     ];
 
