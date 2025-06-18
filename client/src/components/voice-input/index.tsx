@@ -4,18 +4,24 @@ import { FiMic, FiMicOff } from "react-icons/fi";
 
 type VoiceInputProps = {
   onTranscript: (value: string) => void;
+  onInterimTranscript: (value: string) => void; // 👈 new prop
 };
 
-const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript }) => {
+const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, onInterimTranscript }) => {
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
-
   const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const restartIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const FiMicIcon = FiMic as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
   const FiMicOffIcon = FiMicOff as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 
-  // Start mic and periodic restarts
+  // Live update transcript on every change
+  useEffect(() => {
+    if (transcript) {
+      onInterimTranscript(transcript); // 👈 send live update
+    }
+  }, [transcript]);
+
   const startMic = () => {
     resetTranscript();
     SpeechRecognition.startListening({ continuous: true, interimResults: true });
@@ -26,7 +32,6 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript }) => {
     }, 25000);
   };
 
-  // Stop mic and send final transcript
   const stopMic = () => {
     SpeechRecognition.stopListening();
     if (restartIntervalRef.current) clearInterval(restartIntervalRef.current);
@@ -38,7 +43,6 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript }) => {
     resetTranscript();
   };
 
-  // Handle silence detection
   useEffect(() => {
     if (!listening) return;
 
@@ -46,10 +50,9 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript }) => {
 
     silenceTimeoutRef.current = setTimeout(() => {
       stopMic();
-    }, 2000); // 2s of silence
+    }, 4000);
   }, [transcript, listening]);
 
-  // Cleanup
   useEffect(() => {
     return () => {
       SpeechRecognition.stopListening();

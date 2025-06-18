@@ -46,46 +46,46 @@ const Dashboard: React.FC = () => {
    }, [activeSessionId]);
 
    const handleSendMessage = async (msg?: string) => {
-  const input = msg ?? inputMessage;
-  if (!input.trim()) return;
+      const input = msg ?? inputMessage;
+      if (!input.trim()) return;
 
-  const userMessage: ChatMessage = { sender: 'user', message: input };
-  setChatMsg((prev) => [...prev, userMessage]);
+      const userMessage: ChatMessage = { sender: 'user', message: input };
+      setChatMsg((prev) => [...prev, userMessage]);
 
-  const result = await dispatch(fetchChatResponse({ prompt: input }));
-  if (activeSessionId) await dispatch(postMessage({ message: input, sender: 'user', sessionId: activeSessionId }));
+      const result = await dispatch(fetchChatResponse({ prompt: input }));
+      if (activeSessionId) await dispatch(postMessage({ message: input, sender: 'user', sessionId: activeSessionId }));
 
-  if (fetchChatResponse.fulfilled.match(result)) {
-    const botReply: ChatMessage = {
-      sender: 'bot',
-      message: result.payload.response,
-    };
-    setChatMsg((prev) => [...prev, botReply]);
+      if (fetchChatResponse.fulfilled.match(result)) {
+         const botReply: ChatMessage = {
+            sender: 'bot',
+            message: result.payload.response,
+         };
+         setChatMsg((prev) => [...prev, botReply]);
 
-    if (activeSessionId) {
-      if (!hasTitleUpdated) {
-        const generatedTitle = input.split(' ').slice(0, 6).join(' ') + '...';
-        await dispatch(updateSession({ sessionId: activeSessionId, newTitle: generatedTitle }));
-        setHasTitleUpdated(true);
+         if (activeSessionId) {
+            if (!hasTitleUpdated) {
+               const generatedTitle = input.split(' ').slice(0, 6).join(' ') + '...';
+               await dispatch(updateSession({ sessionId: activeSessionId, newTitle: generatedTitle }));
+               setHasTitleUpdated(true);
+            }
+            await dispatch(postMessage({ ...botReply, sessionId: activeSessionId }));
+         }
+
+      } else if (fetchChatResponse.rejected.match(result)) {
+         const errorReply: ChatMessage = {
+            sender: 'bot',
+            message: result.payload || 'Bot failed to respond.',
+         };
+         setChatMsg((prev) => [...prev, errorReply]);
       }
-      await dispatch(postMessage({ ...botReply, sessionId: activeSessionId }));
-    }
 
-  } else if (fetchChatResponse.rejected.match(result)) {
-    const errorReply: ChatMessage = {
-      sender: 'bot',
-      message: result.payload || 'Bot failed to respond.',
-    };
-    setChatMsg((prev) => [...prev, errorReply]);
-  }
+      setInputMessage('');
+   };
 
-  setInputMessage('');
-};
-
-const handleVoiceTranscript = (value: string) => {
-  setInputMessage(value);
-  handleSendMessage(value); // Send message right away
-};
+   const handleVoiceTranscript = (value: string) => {
+      setInputMessage(value);
+      handleSendMessage(value); // Send message right away
+   };
 
    return (
       //   <div className="w-full min-h-screen bg-white flex flex-col items-center px-4 py-6">
@@ -137,13 +137,16 @@ const handleVoiceTranscript = (value: string) => {
             />
             <div className='flex gap-8'>
                <button
-                  onClick={()=>handleSendMessage()}
+                  onClick={() => handleSendMessage()}
                   disabled={loading}
                   className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg"
                >
                   <Fisend className="text-lg" />
                </button>
-               <VoiceInput onTranscript={handleVoiceTranscript} />
+               <VoiceInput
+                  onTranscript={handleVoiceTranscript} // final value on stop
+                  onInterimTranscript={(text) => setInputMessage(text)} // 👈 update input live
+               />
             </div>
          </div>
 
