@@ -6,6 +6,7 @@ import { useOutletContext } from 'react-router-dom';
 import { fetchMessagesBySessionId, postMessage } from '../../redux/messageSlice';
 import { updateSession } from '../../redux/sessionSlice';
 import { FiSend } from 'react-icons/fi';
+import VoiceInput from '../../components/voice-input';
 
 const Dashboard: React.FC = () => {
    const [inputMessage, setInputMessage] = useState('');
@@ -37,48 +38,54 @@ const Dashboard: React.FC = () => {
    }, [activeSessionId]);
 
    useEffect(() => {
-  if (activeSessionId) {
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-  }
-}, [activeSessionId]);
-
-   const handleSendMessage = async () => {
-      if (!inputMessage.trim()) return;
-
-      const userMessage: ChatMessage = { sender: 'user', message: inputMessage };
-      setChatMsg((prev) => [...prev, userMessage]);
-
-      const result = await dispatch(fetchChatResponse({ prompt: inputMessage }));
-      if (activeSessionId && inputMessage) await dispatch(postMessage({ message: inputMessage, sender: 'user', sessionId: activeSessionId }));
-
-      if (fetchChatResponse.fulfilled.match(result)) {
-         const botReply: ChatMessage = {
-            sender: 'bot',
-            message: result.payload.response,
-         };
-         setChatMsg((prev) => [...prev, botReply]);
-
-         if (activeSessionId) {
-            if (!hasTitleUpdated) {
-               const generatedTitle = inputMessage.split(' ').slice(0, 6).join(' ') + '...';
-               await dispatch(updateSession({ sessionId: activeSessionId, newTitle: generatedTitle }));
-               setHasTitleUpdated(true);
-            }
-            await dispatch(postMessage({ ...botReply, sessionId: activeSessionId }));
-         }
-
-      } else if (fetchChatResponse.rejected.match(result)) {
-         const errorReply: ChatMessage = {
-            sender: 'bot',
-            message: result.payload || 'Bot failed to respond.',
-         };
-         setChatMsg((prev) => [...prev, errorReply]);
+      if (activeSessionId) {
+         setTimeout(() => {
+            inputRef.current?.focus();
+         }, 0);
       }
+   }, [activeSessionId]);
 
-      setInputMessage('');
-   };
+   const handleSendMessage = async (msg?: string) => {
+  const input = msg ?? inputMessage;
+  if (!input.trim()) return;
+
+  const userMessage: ChatMessage = { sender: 'user', message: input };
+  setChatMsg((prev) => [...prev, userMessage]);
+
+  const result = await dispatch(fetchChatResponse({ prompt: input }));
+  if (activeSessionId) await dispatch(postMessage({ message: input, sender: 'user', sessionId: activeSessionId }));
+
+  if (fetchChatResponse.fulfilled.match(result)) {
+    const botReply: ChatMessage = {
+      sender: 'bot',
+      message: result.payload.response,
+    };
+    setChatMsg((prev) => [...prev, botReply]);
+
+    if (activeSessionId) {
+      if (!hasTitleUpdated) {
+        const generatedTitle = input.split(' ').slice(0, 6).join(' ') + '...';
+        await dispatch(updateSession({ sessionId: activeSessionId, newTitle: generatedTitle }));
+        setHasTitleUpdated(true);
+      }
+      await dispatch(postMessage({ ...botReply, sessionId: activeSessionId }));
+    }
+
+  } else if (fetchChatResponse.rejected.match(result)) {
+    const errorReply: ChatMessage = {
+      sender: 'bot',
+      message: result.payload || 'Bot failed to respond.',
+    };
+    setChatMsg((prev) => [...prev, errorReply]);
+  }
+
+  setInputMessage('');
+};
+
+const handleVoiceTranscript = (value: string) => {
+  setInputMessage(value);
+  handleSendMessage(value); // Send message right away
+};
 
    return (
       //   <div className="w-full min-h-screen bg-white flex flex-col items-center px-4 py-6">
@@ -112,7 +119,7 @@ const Dashboard: React.FC = () => {
          </div>
 
          {/* Input */}
-         <div className="border-t bg-white px-4 py-3 flex gap-2  justify-center items-center">
+         <div className="border-t bg-white px-4 py-3 flex gap-6  justify-center items-center">
             <textarea
                ref={inputRef}
                value={inputMessage}
@@ -123,18 +130,21 @@ const Dashboard: React.FC = () => {
                      handleSendMessage();
                   }
                }}
-               rows={3}
+               rows={2}
                className="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none max-h-40 overflow-y-auto"
                placeholder="Type your message... (Shift + Enter for newline)"
 
             />
-            <button
-               onClick={handleSendMessage}
-               disabled={loading}
-               className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg"
-            >
-              <Fisend className="text-lg"  />
-            </button>
+            <div className='flex gap-8'>
+               <button
+                  onClick={()=>handleSendMessage()}
+                  disabled={loading}
+                  className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg"
+               >
+                  <Fisend className="text-lg" />
+               </button>
+               <VoiceInput onTranscript={handleVoiceTranscript} />
+            </div>
          </div>
 
       </div>
