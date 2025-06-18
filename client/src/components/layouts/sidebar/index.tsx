@@ -14,24 +14,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onSelectSession, act
   const { sessions } = useAppSelector((state) => state.session);
 
   useEffect(() => {
-  const initializeSession = async () => {
-    const result = await dispatch(getAllSessions());
+    const initializeSession = async () => {
+      const result = await dispatch(getAllSessions());
 
-    if (getAllSessions.fulfilled.match(result)) {
-      const allSessions = result.payload;
-      if (allSessions.length === 0) {
-        const createResult = await dispatch(createSession({ title: 'New Chat' }));
-        if (createSession.fulfilled.match(createResult)) {
-          onSelectSession(createResult.payload._id);
+      if (getAllSessions.fulfilled.match(result)) {
+        const allSessions = result.payload;
+        if (allSessions.length === 0) {
+          const createResult = await dispatch(createSession({ title: 'New Chat' }));
+          if (createSession.fulfilled.match(createResult)) {
+            onSelectSession(createResult.payload._id);
+          }
+        } else if (!activeSessionId) {
+          onSelectSession(allSessions[0]._id);
         }
-      } else if (!activeSessionId) {
-        onSelectSession(allSessions[0]._id);
       }
-    }
-  };
+    };
 
-  initializeSession();
-}, [dispatch, onSelectSession, activeSessionId]);
+    initializeSession();
+  }, [dispatch, onSelectSession, activeSessionId]);
 
   const handleNewChat = async () => {
     const result = await dispatch(createSession({ title: 'New Chat' }));
@@ -42,8 +42,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onSelectSession, act
   };
 
   return (
-    <div className={`min-w-[300px] max-h-[90vh] overflow-y-auto bg-white border-r p-4 space-y-4 ${isOpen ? 'block' : 'hidden'
-      } md:block`}>
+    <div className={`min-w-[300px] h-screen overflow-y-auto border-r p-4 space-y-4
+        ${isOpen ? 'block' : 'hidden'} 
+        md:block
+        bg-white dark:bg-gray-900
+        text-gray-900 dark:text-gray-100
+        border-gray-200 dark:border-gray-700
+      `}>
       <button
         className="w-full mt-1 bg-teal-600 text-white py-2 rounded-lg"
         onClick={handleNewChat}
@@ -56,8 +61,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onSelectSession, act
           <li
             key={session._id}
             onClick={() => onSelectSession(session._id)}
-            className={`p-2 cursor-pointer rounded ${session._id === activeSessionId ? 'bg-gray-200 font-semibold' : 'hover:bg-gray-200'
-              }`}
+            className={`p-2 cursor-pointer rounded ${session._id === activeSessionId
+                ? 'bg-gray-200 dark:bg-gray-700 font-semibold'
+                : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`}
           >
             {session.title}
           </li>

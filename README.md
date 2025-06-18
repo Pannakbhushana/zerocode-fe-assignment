@@ -14,6 +14,8 @@ A web application where users can create an account and chat with Gemini AI usin
 - 🗂️ Chat history saved in MongoDB
 - 🧾 Multi-session support
 - 🗑️ Delete chat history or account
+- 🌓 Dark mode support  
+- 📤 Export chat as PDF or .txt 
 - 📱 Responsive design (mobile/tablet friendly)
 - 🙋 Help & Support page
 
@@ -55,6 +57,8 @@ A web application where users can create an account and chat with Gemini AI usin
 | Signup Page              | ![Signup](./screenshots/signup.png)     |
 | Login Page               | ![Login](./screenshots/login.png)       |
 | Dashboard (Large)        | ![Dashboard](./screenshots/dashboard.png) |
+| Dashboard Dark Mode      | ![DarkMode](./screenshots/darkmode.png) |
+| Export Chat              | ![ExportChat](./screenshots/export-chat.png) |
 | Dashboard (Mobile)       | ![Dashboard Small](./screenshots/dashboard-small-screen.png) |
 | Reset Password           | ![Reset Password](./screenshots/reset-password.png) |
 | User Menu                | ![User Menu](./screenshots/user-menu.png) |

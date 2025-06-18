@@ -5,8 +5,11 @@ import { fetchChatResponse } from '../../redux/chatSlice';
 import { useOutletContext } from 'react-router-dom';
 import { fetchMessagesBySessionId, postMessage } from '../../redux/messageSlice';
 import { updateSession } from '../../redux/sessionSlice';
-import { FiSend } from 'react-icons/fi';
+import { FiChevronDown, FiSend } from 'react-icons/fi';
 import VoiceInput from '../../components/voice-input';
+import { exportChatToPDF, exportChatToText } from '../../utils/utils.dashboard';
+import UpwardSelect from '../../components/layouts/custome-select-tag';
+
 
 const Dashboard: React.FC = () => {
    const [inputMessage, setInputMessage] = useState('');
@@ -20,6 +23,7 @@ const Dashboard: React.FC = () => {
    const inputRef = useRef<HTMLTextAreaElement>(null);
 
    const Fisend = FiSend as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
+   const FichevronDown = FiChevronDown as unknown as React.FC<React.SVGProps<SVGSVGElement>>;
 
    useEffect(() => {
       if (activeSessionId) {
@@ -44,6 +48,7 @@ const Dashboard: React.FC = () => {
          }, 0);
       }
    }, [activeSessionId]);
+
 
    const handleSendMessage = async (msg?: string) => {
       const input = msg ?? inputMessage;
@@ -88,39 +93,33 @@ const Dashboard: React.FC = () => {
    };
 
    return (
-      <div className="w-full flex flex-col h-[85vh] shadow-md border rounded-lg overflow-hidden">
+      <div className="w-full flex flex-col h-[90vh] overflow-hidden">
+         {/* Chat Area */}
          <div
             ref={chatContainerRef}
-            className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gray-50"
+            className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 bg-gray-50 dark:bg-gray-800 scrollbar-hide"
          >
-            {chatMsg.length === 0 ? (
-               <div className="text-gray-500 text-center h-full text-4xl flex justify-center items-center">
-                  <p>What's on your mind today?</p>
-               </div>
-            ) : (
-               chatMsg.map((msg, index) => (
+            {chatMsg.map((msg, index) => (
+               <div
+                  key={index}
+                  className={`w-full flex px-1 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+               >
                   <div
-                     key={index}
-                     className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                     <div
-                        className={`max-w-[75%] px-3 py-2 rounded-lg ${msg.sender === 'user'
-                              ? 'bg-emerald-100 text-gray-800 rounded-br-none' // User message: light green, no bottom-right curve
-                              : 'bg-gray-200 text-gray-800 rounded-bl-none' // Bot message: light gray, no bottom-left curve
-                           } relative`}
-                     >
-                        <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
-                     </div>
+                     className={`text-start inline-block max-w-[calc(100%-40px)] sm:max-w-[75%] md:max-w-[60%] px-3 py-2 rounded-lg
+                                 text-sm break-words whitespace-pre-wrap font-inter ${msg.sender === 'user'
+                                 ? 'bg-emerald-100 dark:bg-emerald-700 text-gray-800 dark:text-gray-100 font-medium'
+                                 : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-normal' }`}>
+                     {msg.message}
                   </div>
-               ))
-            )}
+               </div>
+            ))}
             {loading && (
-               <div className="text-sm text-gray-500">Bot is typing...</div>
+               <div className="text-base sm:text-lg text-gray-500 font-inter">Bot is typing...</div>
             )}
          </div>
 
-         {/* Input */}
-         <div className="border-t bg-white px-4 py-3 flex gap-6  justify-center items-center">
+         {/* Input Area */}
+         <div className="shrink-0 border-t bg-white dark:bg-gray-900 dark:border-gray-700 px-3 md:px-4 py-3 flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center items-stretch">
             <textarea
                ref={inputRef}
                value={inputMessage}
@@ -132,26 +131,36 @@ const Dashboard: React.FC = () => {
                   }
                }}
                rows={2}
-               className="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none max-h-40 overflow-y-auto"
+               className="w-[90%] md:w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none max-h-40 overflow-y-auto text-sm"
                placeholder="Type your message... (Shift + Enter for newline)"
-
             />
-            <div className='flex gap-8'>
+
+            <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+               <UpwardSelect
+                  onSelect={(value) => {
+                     if (value === 'pdf') exportChatToPDF(chatMsg);
+                     if (value === 'txt') exportChatToText(chatMsg, activeSessionId ?? undefined);
+                  }}
+               />
+
+               <div className="flex justify-center">
+                  <VoiceInput
+                     onTranscript={handleVoiceTranscript}
+                     onInterimTranscript={(text) => setInputMessage(text)}
+                  />
+               </div>
+
                <button
                   onClick={() => handleSendMessage()}
                   disabled={loading}
-                  className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg"
-               >
+                  className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg">
                   <Fisend className="text-lg" />
                </button>
-               <VoiceInput
-                  onTranscript={handleVoiceTranscript}
-                  onInterimTranscript={(text) => setInputMessage(text)}
-               />
             </div>
-         </div>
 
+         </div>
       </div>
+
    );
 };
 

@@ -23,7 +23,7 @@ const Layout = () => {
       <div className="flex flex-col flex-1">
         <Navbar onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)} />
 
-        <main className="flex-1 overflow-y-auto p-4 bg-gray-50">
+        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <Outlet context={{ activeSessionId }} /> {/* Pass to children */}
         </main>
       </div>
