@@ -65,9 +65,8 @@ A web application where users can create an account and chat with Gemini AI usin
 
 ## 🔧 Installation Instructions
 
-### Clone the repository
+### 🧬 Clone repository
 
-- clone repo
 - git clone https://github.com/Pannakbhushana/zerocode-fe-assignment.git
 
 
