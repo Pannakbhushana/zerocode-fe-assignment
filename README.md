@@ -65,6 +65,12 @@ A web application where users can create an account and chat with Gemini AI usin
 
 ## 🔧 Installation Instructions
 
+### Clone the repository
+
+- clone repo
+- git clone https://github.com/Pannakbhushana/zerocode-fe-assignment.git
+
+
 ### 🔧 Install Frontend
 
 - cd client
@@ -193,10 +199,5 @@ Deployment Summary:
 
 ## 🌐 Live Demo
 🔗 https://chitchatwithchatbot.netlify.app/
-
-
-## Clone the repository
-```bash
-git clone https://github.com/Pannakbhushana/zerocode-fe-assignment.git
 
 
