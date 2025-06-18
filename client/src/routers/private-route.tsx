@@ -20,9 +20,6 @@ const PrivateRoute = () => {
       logoutUser(dispatch, navigate);
       toast.warning("Session expired. Please log in again.");
     }
-    else if(!token){
-      toast.info("Join us to access this exclusive page! Log in or sign up now.");
-    }
   }, [isExpired, dispatch, navigate]);
 
   if (!token || isExpired) {

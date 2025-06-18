@@ -39,6 +39,7 @@ const UserTab: React.FC = () => {
   const handleClearHistory = async () => {
     try {
       await dispatch<any>(deleteAllSessions()).unwrap();
+      window.location.reload();
       toast.success("Chat history cleared successfully.");
     } catch (error: any) {
       toast.error(error || "Failed to clear chat history.");

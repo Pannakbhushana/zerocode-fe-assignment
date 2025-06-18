@@ -84,14 +84,11 @@ const Dashboard: React.FC = () => {
 
    const handleVoiceTranscript = (value: string) => {
       setInputMessage(value);
-      handleSendMessage(value); // Send message right away
+      handleSendMessage(value);
    };
 
    return (
-      //   <div className="w-full min-h-screen bg-white flex flex-col items-center px-4 py-6">
       <div className="w-full flex flex-col h-[85vh] shadow-md border rounded-lg overflow-hidden">
-
-         {/* Messages */}
          <div
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gray-50"
@@ -104,12 +101,16 @@ const Dashboard: React.FC = () => {
                chatMsg.map((msg, index) => (
                   <div
                      key={index}
-                     className={`px-4 py-2 rounded-lg w-full ${msg.sender === 'user'
-                        ? 'bg-teal-100 self-end text-right'
-                        : 'bg-gray-200 self-start text-left'
-                        }`}
+                     className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                     <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                     <div
+                        className={`max-w-[75%] px-3 py-2 rounded-lg ${msg.sender === 'user'
+                              ? 'bg-emerald-100 text-gray-800 rounded-br-none' // User message: light green, no bottom-right curve
+                              : 'bg-gray-200 text-gray-800 rounded-bl-none' // Bot message: light gray, no bottom-left curve
+                           } relative`}
+                     >
+                        <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                     </div>
                   </div>
                ))
             )}
@@ -144,14 +145,13 @@ const Dashboard: React.FC = () => {
                   <Fisend className="text-lg" />
                </button>
                <VoiceInput
-                  onTranscript={handleVoiceTranscript} // final value on stop
-                  onInterimTranscript={(text) => setInputMessage(text)} // 👈 update input live
+                  onTranscript={handleVoiceTranscript}
+                  onInterimTranscript={(text) => setInputMessage(text)}
                />
             </div>
          </div>
 
       </div>
-      //  </div>
    );
 };
 
