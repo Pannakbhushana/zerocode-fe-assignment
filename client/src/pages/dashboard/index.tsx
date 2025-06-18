@@ -93,12 +93,22 @@ const Dashboard: React.FC = () => {
    };
 
    return (
-      <div className="w-full flex flex-col h-[90vh] overflow-hidden">
+      <div className="w-full flex flex-col h-[84vh] overflow-hidden">
          {/* Chat Area */}
          <div
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 bg-gray-50 dark:bg-gray-800 scrollbar-hide"
          >
+            {chatMsg.length === 0 && (
+               <div className="w-full flex justify-start px-1">
+                  <div className="text-start inline-block max-w-[calc(100%-40px)] sm:max-w-[75%] md:max-w-[60%] px-3 py-2 rounded-lg
+                         text-sm break-words whitespace-pre-wrap font-inter bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-normal">
+                     Hey there! 👋<br />
+                     Feel free to ask me anything.
+                  </div>
+               </div>
+            )}
+
             {chatMsg.map((msg, index) => (
                <div
                   key={index}
@@ -107,8 +117,8 @@ const Dashboard: React.FC = () => {
                   <div
                      className={`text-start inline-block max-w-[calc(100%-40px)] sm:max-w-[75%] md:max-w-[60%] px-3 py-2 rounded-lg
                                  text-sm break-words whitespace-pre-wrap font-inter ${msg.sender === 'user'
-                                 ? 'bg-emerald-100 dark:bg-emerald-700 text-gray-800 dark:text-gray-100 font-medium'
-                                 : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-normal' }`}>
+                           ? 'bg-emerald-100 dark:bg-emerald-700 text-gray-800 dark:text-gray-100 font-medium'
+                           : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-normal'}`}>
                      {msg.message}
                   </div>
                </div>
@@ -132,7 +142,7 @@ const Dashboard: React.FC = () => {
                }}
                rows={2}
                className="w-[90%] md:w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none max-h-40 overflow-y-auto text-sm"
-               placeholder="Type your message... (Shift + Enter for newline)"
+               placeholder="Ask anything"
             />
 
             <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
